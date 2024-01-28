@@ -1,11 +1,38 @@
 const {WebSocketServer} = require('ws');
 const { readFileSync } = require('fs')
 const {createServer} = require('https')
+const express = require('express');
+
+let app = express();
+app.use(express.json());
+
+let counter = 0;
+let nameIdMap = new Map();
+let idNameMap = new Map();
+
+app.get("/counter", function(req, res) {
+    res.send(counter.toString());
+    counter++;
+})
+
+app.post("/user", function(req, res) {
+    // 获取请求中对象
+    let body = req.body;
+    nameIdMap.set(body.name, counter);
+    idNameMap.set(counter, body.name);
+    res.send(counter.toString());
+    counter++;
+})
+
 
 const server = createServer({
     cert: readFileSync('keys/cert.pem'),
     key: readFileSync('keys/key.pem'),
-});
+}, app);
+
+
+
+
 const wss = new WebSocketServer({ server });
 
 let clients = new Map;
@@ -47,6 +74,7 @@ wss.on('connection',function(ws, request){  //在connection事件中，回调函
         }
     })
 })
+
 
 
 
