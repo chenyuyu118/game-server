@@ -1,6 +1,6 @@
 const {WebSocket} = require('ws');
 
-let client = new WebSocket('ws://localhost:4000/test');
+let client = new WebSocket('wss://localhost:4000/test');
 
 client.on('open',function(){
     console.log('open connection');

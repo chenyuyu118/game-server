@@ -1,10 +1,13 @@
 const {WebSocketServer} = require('ws');
 const { readFileSync } = require('fs')
+const cors = require('cors')
 const {createServer} = require('https')
 const express = require('express');
 
 let app = express();
 app.use(express.json());
+
+app.use(cors())
 
 let counter = 0;
 let nameIdMap = new Map();
@@ -40,8 +43,15 @@ let clients = new Map;
 //如果有WebSocket请求接入，wss对象可以响应connection事件来处理这个WebSocket：
 wss.on('connection',function(ws, request){  //在connection事件中，回调函数会传入一个WebSocket的实例，表示这个WebSocket连接。
     let start = request.url.indexOf("test");
-    let id = request.url.substring(start + 4);
-    clients.set(id, ws);
+    if (start > 0) {
+        let id = request.url.substring(start + 4);
+        clients.set(id, ws);
+    } else {
+        clients.set(request.url, ws);
+    }
+    clients.forEach((value, key) => {
+        console.log(key)
+    })
     ws.on('message',function(message){  //我们通过响应message事件，在收到消息后再返回一个ECHO: xxx的消息给客户端。
         let clientIter = clients.values();
         let client = clientIter.next().value;
