@@ -29,7 +29,7 @@ app.post("/user", function(req, res) {
 
 
 const server = createServer({
-    cert: readFileSync('keys/cert.pem'),
+    cert: readFileSync('keys/certificate.crt'),
     key: readFileSync('keys/key.pem'),
 }, app);
 
