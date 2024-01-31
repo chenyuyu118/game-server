@@ -1,7 +1,7 @@
 const {WebSocketServer} = require('ws');
 const { readFileSync } = require('fs')
 const cors = require('cors')
-const {createServer} = require('https')
+const {createServer} = require('http')
 const express = require('express');
 
 let app = express();
@@ -27,10 +27,16 @@ app.post("/user", function(req, res) {
     counter++;
 })
 
+app.get("/user/:id", function(req, res) {
+    let id = req.params.id;
+    let name = idNameMap.get(Number.parseInt(id));
+    res.send(name);
+})
+
 
 const server = createServer({
-    cert: readFileSync('keys/certificate.crt'),
-    key: readFileSync('keys/key.pem'),
+    // cert: readFileSync('keys/certificate.crt'),
+    // key: readFileSync('keys/key.pem'),
 }, app);
 
 
@@ -84,8 +90,6 @@ wss.on('connection',function(ws, request){  //在connection事件中，回调函
         }
     })
 })
-
-
 
 
 server.listen(4000)
