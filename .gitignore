@@ -1,2 +1,10 @@
 /node_modules/*
 /node_modules/**
+/.idea/.gitignore
+/.idea/game-server.iml
+/.idea/jsLibraryMappings.xml
+/.idea/modules.xml
+/.idea/UniappTool.xml
+/.idea/vcs.xml
+/.idea/watcherTasks.xml
+/yarn.lock

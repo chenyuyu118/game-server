@@ -1,0 +1,138 @@
+html
+    head
+        title= title
+        style.
+            ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            ul ul {
+                margin-left: 20px;
+            }
+            li {
+                margin: 5px 0;
+                padding: 10px;
+                background-color: #f8f8f8;
+                border: 1px solid #ddd;
+                font-size: 18px;
+                color: #333;
+            }
+            .ob-view {
+                color: #f00; // 文字颜色为红色
+                font-weight: bold; // 文字加粗
+                margin-left: 10px; // 左边距为10px
+            }
+            .modify-button {
+                float: right;
+            / / 靠右显示 margin-right: 10 px;
+            / / 右边距为10px
+            }
+    body
+        ul
+            each val, index in resultList
+                li(ondragover=`allowDrop(event, 'l1', ${index})` ondrop=`drop(event, ${index})`)= index + ":"
+                    span.modify-button
+                        button(onclick=`startGame(${index})`) 开始游戏
+                        button(onclick=`endGame(${index})`) 结束游戏
+                ul
+                    each item in val.users
+                        li(draggable='true' ondragstart=`drag(event, ${item.id}, ${index})` ondragover="allowDrop(event, 'l2')" ondrop='drop(event)')
+                            = item.id + " " + item.name + " "
+                            if item.isOb
+                                div.ob-view  "Ob视角"
+        button(id='addButton') Add
+        script.
+            function drag(ev, id, index) {
+                ev.dataTransfer.dropEffect = 'move'
+                ev.dataTransfer.setData("id", id);
+                ev.dataTransfer.setData("index", index);
+            }
+            document.getElementById('addButton').addEventListener('click', function() {
+                fetch('/group/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                }).then(function(response) {
+                    if (response.ok) {
+                        console.log('Request succeeded');
+                        location.reload()
+                    } else {
+                        console.log('Request failed');
+                    }
+                }).catch(function(error) {
+                    console.log('Request failed', error);
+                });
+            });
+            function allowDrop(ev, l, val) {
+                if (l === 'l1') {
+                    ev.preventDefault();
+                }
+                return false;
+            }
+            function drop(ev, index) {
+                ev.preventDefault();
+                let id = ev.dataTransfer.getData("id");
+                let fromIndex = ev.dataTransfer.getData("index");
+                if (index !== fromIndex) {
+                    fetch('/group/move', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: id,
+                            groupId: index
+                        })
+                    }).then(function(response) {
+                        if (response.ok) {
+                            console.log('Request succeeded');
+                            location.reload()
+                        } else {
+                            console.log('Request failed');
+                        }
+                    }).catch(function(error) {
+                        console.log('Request failed', error);
+                    });
+                }
+            }
+            function startGame(index) {
+                fetch('/group/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        groupId: index
+                    })
+                }).then(function(response) {
+                    if (response.ok) {
+                        console.log('Request succeeded');
+                        location.reload()
+                    } else {
+                        console.log('Request failed');
+                    }
+                }).catch(function(error) {
+                    console.log('Request failed', error);
+                });
+            }
+            function endGame(index) {
+                fetch('/group/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        groupId: index
+                    })
+                }).then(function(response) {
+                    if (response.ok) {
+                        console.log('Request succeeded');
+                        location.reload()
+                    } else {
+                        console.log('Request failed');
+                    }
+                }).catch(function(error) {
+                    console.log('Request failed', error);
+                });
+            }
